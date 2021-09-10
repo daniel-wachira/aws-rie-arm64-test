@@ -1,0 +1,19 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Docker-up
+    command: sudo docker-up
+  - name: Build and Deploy
+    command: >
+        docker build -t myfunction:latest . &&
+        gp sync-done deploy &&
+        docker run -p 9000:8080 myfunction:latest
+  - name: Run
+    command: >
+        clear &&
+        echo "Waiting for docker to finish..." &&
+        gp sync-await deploy > /dev/null &&
+        sleep 5 &&
+        echo "Done. Will now connect to test endpoint." &&
+        curl -i -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
